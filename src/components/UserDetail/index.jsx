@@ -1,31 +1,43 @@
-import React from "react";
-import {Typography} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Typography } from "@mui/material";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-import "./styles.css";
-import {useParams} from "react-router-dom";
-import models from "../../modelData/models";
 /**
  * Define UserDetail, a React component of Project 4.
  */
 function UserDetail() {
-    const userId = useParams();
-    // const user = models.userModel(userId);
-    const user =  models.userModel(userId)
-    return (
-        <>
-          <Typography variant="body1">
-            This should be the UserDetail view of the PhotoShare app. Since it is
-            invoked from React Router the params from the route will be in property match.
-            So this should show details of user: 
-            {/* {user.userId}, {user.first_name}, {user.last_name}. */}
-            You can fetch the model for the user from models.userModel.
-          </Typography>
-          <strong>Name:</strong> {user.first_name} {user.last_name}<br />
-                <strong>Location:</strong> {user.location}<br />
-                <strong>Description:</strong> <span dangerouslySetInnerHTML={{ __html: user.description }}></span><br />
-                <strong>Occupation:</strong> {user.occupation}
-        </>
-    );
+  const { userId } = useParams();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`https://9mlf5s-8081.csb.app/api/user/${userId}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, [userId]);
+
+  if (!user) {
+    return <Typography variant="body1">Loading...</Typography>;
+  }
+
+  return (
+    <>
+      <Typography variant="body1">
+        Thông tin của người dùng
+      </Typography>
+      <strong>Name:</strong> {user.user_name} <br />
+      <strong>Location:</strong> {user.location}<br />
+      <strong>Description:</strong> <span dangerouslySetInnerHTML={{ __html: user.description }}></span><br />
+      <strong>Occupation:</strong> {user.occupation}
+    </>
+  );
 }
 
 export default UserDetail;
