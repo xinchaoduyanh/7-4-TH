@@ -8,7 +8,7 @@ function TopBar() {
   const navigate = useNavigate();
   const { pathname } = location;
   const [userName, setUserName] = useState("");
-
+  const user_name = localStorage.getItem("user_name");
   useEffect(() => {
     console.log("Pathname:", pathname);
     const fetchData = async () => {
@@ -63,9 +63,9 @@ function TopBar() {
   return (
     <AppBar className="topbar-appBar" position="absolute">
       <Toolbar>
-        {pathname === "/" && userName && (
+        { user_name && (
           <Typography variant="h6" color="inherit">
-            Xin chào {userName}
+            Xin chào {user_name}
           </Typography>
         )}
         <Box sx={{ flexGrow: 1, textAlign: "center" }}>

@@ -53,9 +53,6 @@ function UserList() {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        User List
-      </Typography>
       <Typography variant="body1" gutterBottom>
         Đây là danh sách người dùng của chúng tôi, bạn hãy cùng khám phá nhé
       </Typography>

@@ -46,8 +46,11 @@ const UserPhotos = () => {
     fetchPhotos();
   }, [userId]);
 
-  const handleCommentChange = (event) => {
-    setCommentText(event.target.value);
+  const handleCommentChange = (event, photoId) => {
+    setCommentText((prevComments) => ({
+      ...prevComments,
+      [photoId]: event.target.value,
+    }));
   };
 
   const handleCommentSubmit = async (photoId) => {
@@ -55,10 +58,10 @@ const UserPhotos = () => {
       const userId = localStorage.getItem("user_id");
       const userName = localStorage.getItem("user_name");
       const token = localStorage.getItem("token");
-      
+
       const response = await axios.post(
         `https://9mlf5s-8081.csb.app/api/photo/${photoId}/comments`,
-        { comment: commentText, user_id: userId, user_name: userName },
+        { comment: commentText[photoId], user_id: userId, user_name: userName },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,7 +76,10 @@ const UserPhotos = () => {
         )
       );
 
-      setCommentText(""); // Clear the comment input field
+      setCommentText((prevComments) => ({
+        ...prevComments,
+        [photoId]: "", // Clear the comment input field for this photo
+      }));
     } catch (error) {
       console.error("Error submitting comment:", error);
     }
@@ -168,7 +174,7 @@ const Photo = ({
   showAllComments,
   setShowAllComments,
 }) => {
-  const { _id, user_id, date_time, file_name, comments } = photo;
+  const { _id,  date_time, file_name, comments } = photo;
 
   const visibleComments = showAllComments ? comments : comments.slice(0, 3);
 
