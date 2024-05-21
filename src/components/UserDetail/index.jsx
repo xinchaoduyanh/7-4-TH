@@ -32,10 +32,10 @@ function UserDetail() {
       <Typography variant="body1">
         Thông tin của người dùng
       </Typography>
-      <strong>Name:</strong> {user.user_name} <br />
-      <strong>Location:</strong> {user.location}<br />
-      <strong>Description:</strong> <span dangerouslySetInnerHTML={{ __html: user.description }}></span><br />
-      <strong>Occupation:</strong> {user.occupation}
+      <strong>Tên:</strong> {user.user_name} <br />
+      <strong>Địa chỉ:</strong> {user.location}<br />
+      <strong>Mô tả:</strong> <span dangerouslySetInnerHTML={{ __html: user.description }}></span><br />
+      <strong>Nghề nghiệp:</strong> {user.occupation}
     </>
   );
 }

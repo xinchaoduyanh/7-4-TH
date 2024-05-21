@@ -57,16 +57,7 @@ function UserList() {
         User List
       </Typography>
       <Typography variant="body1" gutterBottom>
-        This is the user list, which takes up 3/12 of the window. You might
-        choose to use{" "}
-        <MuiLink href="https://mui.com/components/lists/" target="_blank">
-          Lists
-        </MuiLink>{" "}
-        and{" "}
-        <MuiLink href="https://mui.com/components/dividers/" target="_blank">
-          Dividers
-        </MuiLink>{" "}
-        to display your users like so:
+        Đây là danh sách người dùng của chúng tôi, bạn hãy cùng khám phá nhé
       </Typography>
       <List component="nav">
         {users.map((user) => (
@@ -96,13 +87,13 @@ function UserList() {
                         color: "#3f51b5",
                       }}
                     >
-                      Details
+                      Thông tin
                     </Link>
                     <Link
                       to={`/photos/${user._id}`}
                       style={{ textDecoration: "none", color: "#3f51b5" }}
                     >
-                      Photos
+                      Ảnh
                     </Link>
                   </>
                 }
@@ -112,9 +103,6 @@ function UserList() {
           </React.Fragment>
         ))}
       </List>
-      <Typography variant="body1" gutterBottom>
-        The model comes in from an API call
-      </Typography>
     </Box>
   );
 }

@@ -125,12 +125,12 @@ export default function Register() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Register
+            Đăng nhập
           </Button>
           <Grid container>
             <Grid item>
               <Link href="/login" variant="body2">
-                {"Already have an account? Login"}
+                {"Có tài khoản rồi sao? Đăng nhập ngay"}
               </Link>
             </Grid>
           </Grid>

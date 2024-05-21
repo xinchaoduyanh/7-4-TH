@@ -1,49 +1,81 @@
-import React from "react";
-import { AppBar, Toolbar, Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-import "./styles.css";
-
-/**
- * Define TopBar, a React component of Project 4.
- */
 function TopBar() {
-  // Get the current pathname from React Router's useLocation hook
   const location = useLocation();
-  const pathname = location.pathname;
+  const navigate = useNavigate();
+  const { pathname } = location;
+  const [userName, setUserName] = useState("");
 
-  // Function to extract user ID from the pathname
+  useEffect(() => {
+    console.log("Pathname:", pathname);
+    const fetchData = async () => {
+      try {
+        // Extract userId from pathname
+        const userId = getUserIdFromPathname(pathname);
+        console.log("User Id:", userId);
+        if (userId) {
+          const response = await axios.get(
+            `https://9mlf5s-8081.csb.app/api/user/${userId}`
+          );
+          console.log("User data:", response.data);
+          setUserName(response.data.user_name);
+        } else {
+          // Set userName to null or another value if pathname contains "/photos/"
+          setUserName(null);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchData();
+  }, [pathname]);
+
   const getUserIdFromPathname = (pathname) => {
     const parts = pathname.split("/");
-    const userIdIndex = parts.findIndex((part) => part === "users");
+    console.log("Parts:", parts);
+    const userIdIndex = parts.findIndex((part) => part === "users" || part === "photos");
     if (userIdIndex !== -1 && userIdIndex + 1 < parts.length) {
       return parts[userIdIndex + 1];
     }
+    
     return null;
   };
 
-  // Determine the app context based on the pathname
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   let appContext = "";
 
-  const userId = getUserIdFromPathname(pathname);
-  if (userId) {
-    appContext = `Photos of User ${userId}`;
-
+  if (pathname.startsWith("/users/")) {
+    appContext = `Thông tin của ${userName || "Người dùng"}`;
+  } else if (pathname.startsWith("/photos/")) {
+    appContext = `Ảnh của ${userName || "Người dùng"}`;
   } else if (pathname === "/") {
-    appContext = "Home";
+    appContext = "Cùng khám phá ảnh mọi người nhé";
   }
 
   return (
     <AppBar className="topbar-appBar" position="absolute">
       <Toolbar>
-        {/* Left side: Your name */}
-        <Typography variant="h6" color="inherit" style={{ flexGrow: 1 }}>
-          Your Name
-        </Typography>
-        {/* Right side: App context */}
-        <Typography variant="h6" color="inherit">
-          {appContext}
-        </Typography>
+        {pathname === "/" && userName && (
+          <Typography variant="h6" color="inherit">
+            Xin chào {userName}
+          </Typography>
+        )}
+        <Box sx={{ flexGrow: 1, textAlign: "center" }}>
+          <Typography variant="h6" color="inherit">
+            {appContext}
+          </Typography>
+        </Box>
+        <Button color="inherit" onClick={handleLogout}>
+          Đăng xuất
+        </Button>
       </Toolbar>
     </AppBar>
   );

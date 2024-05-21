@@ -51,7 +51,32 @@ const UserPhotos = () => {
   };
 
   const handleCommentSubmit = async (photoId) => {
-    // Function remains unchanged
+    try {
+      const userId = localStorage.getItem("user_id");
+      const userName = localStorage.getItem("user_name");
+      const token = localStorage.getItem("token");
+      
+      const response = await axios.post(
+        `https://9mlf5s-8081.csb.app/api/photo/${photoId}/comments`,
+        { comment: commentText, user_id: userId, user_name: userName },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Update the photos state to reflect the new comment
+      setPhotos((prevPhotos) =>
+        prevPhotos.map((photo) =>
+          photo._id === photoId ? response.data : photo
+        )
+      );
+
+      setCommentText(""); // Clear the comment input field
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+    }
   };
 
   const handleFileChange = (event) => {
@@ -59,24 +84,46 @@ const UserPhotos = () => {
   };
 
   const handlePhotoUpload = async () => {
-    // Function remains unchanged
-  };
+    if (!selectedFile) {
+      setUploadError("Vui lòng chọn một file để tải lên.");
+      return;
+    }
 
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
+    const formData = new FormData();
+    formData.append("photo", selectedFile);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `https://9mlf5s-8081.csb.app/api/photo/uploadPhoto`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Add the new photo to the photos state
+      setPhotos((prevPhotos) => [response.data, ...prevPhotos]);
+      setSelectedFile(null); // Clear the file input field
+      setUploadError(null); // Clear any previous upload errors
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      setUploadError("Có lỗi xảy ra khi tải lên ảnh.");
+    }
+  };
 
   return (
     <div>
       <Typography variant="body1">
-        This should be the UserPhotos view of the PhotoShare app. Since it is
-        invoked from React Router the params from the route will be in property
-        match. So this should show details of user:
+        Đây là trang xem ảnh của người dùng trong ứng dụng PhotoShare.
       </Typography>
       {userId === loggedInUserId && (
         <Card variant="outlined" style={{ marginBottom: "20px" }}>
           <CardContent>
-            <Typography variant="h6">Upload a new photo</Typography>
+            <Typography variant="h6">Tải lên ảnh mới</Typography>
             <input type="file" onChange={handleFileChange} />
             <Button
               variant="contained"
@@ -84,13 +131,15 @@ const UserPhotos = () => {
               onClick={handlePhotoUpload}
               style={{ marginTop: "10px" }}
             >
-              Upload Photo
+              Tải lên ảnh
             </Button>
             {uploadError && <Alert severity="error">{uploadError}</Alert>}
           </CardContent>
         </Card>
       )}
-      {photos.length > 0 ? (
+      {error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : photos.length > 0 ? (
         photos.map((photo) => (
           <Photo
             key={photo._id}
@@ -103,7 +152,9 @@ const UserPhotos = () => {
           />
         ))
       ) : (
-        <Typography>No photos available.</Typography>
+        <Typography variant="body1">
+          Người dùng hiện tại chưa đăng bức ảnh nào.
+        </Typography>
       )}
     </div>
   );
@@ -124,18 +175,9 @@ const Photo = ({
   return (
     <Card variant="outlined" style={{ marginBottom: "20px" }}>
       <CardContent>
-        <Typography variant="h6">Photo Detail</Typography>
+        <Typography variant="h6">Chi tiết ảnh</Typography>
         <Typography>
-          <strong>Id:</strong> {_id}
-        </Typography>
-        <Typography>
-          <strong>UserId:</strong> {user_id}
-        </Typography>
-        <Typography>
-          <strong>Date:</strong> {new Date(date_time).toLocaleString()}
-        </Typography>
-        <Typography>
-          <strong>FileName:</strong> {file_name}
+          <strong>Ngày đăng:</strong> {new Date(date_time).toLocaleString()}
         </Typography>
         <img
           src={`https://9mlf5s-8081.csb.app/uploads/${file_name}`}
@@ -148,7 +190,7 @@ const Photo = ({
           }}
         />
         <Typography variant="h6" style={{ marginTop: "20px" }}>
-          Comments:
+          Bình luận:
         </Typography>
         {visibleComments && visibleComments.length > 0 ? (
           <List>
@@ -177,7 +219,7 @@ const Photo = ({
             ))}
           </List>
         ) : (
-          <Typography>No comments yet.</Typography>
+          <Typography>Chưa có bình luận nào.</Typography>
         )}
         {!showAllComments && comments.length > 3 && (
           <MuiLink
@@ -185,11 +227,11 @@ const Photo = ({
             variant="body2"
             onClick={() => setShowAllComments(true)}
           >
-            Show more comments ({comments.length})
+            Hiển thị thêm bình luận ({comments.length})
           </MuiLink>
         )}
         <TextField
-          label="Comment"
+          label="Bình luận"
           variant="outlined"
           value={commentText}
           onChange={onCommentChange}
@@ -204,7 +246,7 @@ const Photo = ({
           onClick={() => onCommentSubmit(_id)}
           style={{ marginTop: "10px" }}
         >
-          Submit Comment
+          Gửi bình luận
         </Button>
       </CardContent>
     </Card>

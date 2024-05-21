@@ -50,7 +50,7 @@ export default function Login() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Login
+          Đăng nhập
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -88,7 +88,7 @@ export default function Login() {
           <Grid container>
             <Grid item>
               <Link href="/register" variant="body2">
-                {"Don't have an account? Register"}
+                {"Chưa có tài khoản? Đăng ký ngay"}
               </Link>
             </Grid>
           </Grid>
